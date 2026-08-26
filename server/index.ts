@@ -229,6 +229,119 @@ app.post('/api/bookings', authenticateToken, async (req: any, res: Response) => 
   }
 });
 
+// ===================================================
+// 5. PAGINATED ATTENDANCE HISTORY (PRD Section 10.3 FR-08/FR-09 & US-301)
+// ===================================================
+app.get('/api/bookings/my-history', authenticateToken, async (req: any, res: Response) => {
+  const user_id = req.user.userId;
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+  const offset = (page - 1) * limit;
+  const statusFilter = req.query.status as string; // Optional: 'booked', 'attended', 'cancelled'
+
+  try {
+    let queryText = `
+      SELECT 
+        b.id AS booking_id,
+        b.status,
+        b.created_at AS booked_at,
+        c.id AS class_id,
+        c.name AS class_name,
+        c.trainer,
+        c.scheduled_time
+      FROM bookings b
+      JOIN classes c ON b.class_id = c.id
+      WHERE b.user_id = $1
+    `;
+
+    const queryParams: any[] = [user_id];
+
+    if (statusFilter) {
+      queryParams.push(statusFilter);
+      queryText += ` AND b.status = $${queryParams.length}`;
+    }
+
+    queryText += ` ORDER BY b.created_at DESC LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
+    queryParams.push(limit, offset);
+
+    // Fetch paginated rows
+    const result = await pool.query(queryText, queryParams);
+
+    // Fetch total count for pagination metadata
+    const countResult = await pool.query(`SELECT COUNT(*) FROM bookings WHERE user_id = $1`, [user_id]);
+    const totalRecords = parseInt(countResult.rows[0].count);
+
+    res.json({
+      page,
+      limit,
+      totalRecords,
+      totalPages: Math.ceil(totalRecords / limit),
+      history: result.rows
+    });
+  } catch (err) {
+    console.error('Attendance history error:', err);
+    res.status(500).json({ error: 'Failed to fetch attendance history' });
+  }
+});
+
+// ===================================================
+// 6. ATOMIC CANCELLATION & SEAT RE-OPENING ENGINE
+// ===================================================
+app.post('/api/bookings/cancel', authenticateToken, async (req: any, res: Response) => {
+  const { booking_id } = req.body;
+  const user_id = req.user.userId;
+
+  if (!booking_id) return res.status(400).json({ error: 'booking_id is required' });
+
+  const client = await pool.connect();
+
+  try {
+    // 1. Begin ACID Transaction
+    await client.query('BEGIN');
+
+    // 2. Fetch booking with Row Lock
+    const bookingResult = await client.query(
+      `SELECT * FROM bookings WHERE id = $1 AND user_id = $2 AND status = 'booked' FOR UPDATE`,
+      [booking_id, user_id]
+    );
+
+    if (bookingResult.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Active booking not found or already cancelled' });
+    }
+
+    const booking = bookingResult.rows[0];
+
+    // 3. Update booking status to 'cancelled'
+    await client.query(
+      `UPDATE bookings SET status = 'cancelled' WHERE id = $1`,
+      [booking_id]
+    );
+
+    // 4. Atomically Reopen Seat (Increment available_seats)
+    const classResult = await client.query(
+      `UPDATE classes SET available_seats = available_seats + 1 WHERE id = $1 RETURNING available_seats`,
+      [booking.class_id]
+    );
+
+    // 5. Commit Transaction
+    await client.query('COMMIT');
+
+    res.json({
+      message: 'Booking cancelled successfully. Seat reopened!',
+      booking_id,
+      new_available_seats: classResult.rows[0].available_seats
+    });
+
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error('Cancellation error:', err);
+    res.status(500).json({ error: 'Failed to cancel booking' });
+  } finally {
+    client.release();
+  }
+});
+
 // Health Check Route
 app.get('/api/health', (req: Request, res: Response) => {
   res.json({ status: 'OK', message: 'CureFit Backend Engine is Live!' });
