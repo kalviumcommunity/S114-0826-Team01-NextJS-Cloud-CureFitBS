@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import pg from 'pg';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import http from 'http';
+import { WebSocketServer, WebSocket } from 'ws';
 
 dotenv.config();
 
@@ -11,21 +13,49 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-curefit-key-2026';
 
+// 1. HTTP & WebSocket Server Setup
+const server = http.createServer(app);
+const wss = new WebSocketServer({ server });
+const connectedClients = new Set<WebSocket>();
+
+wss.on('connection', (ws: WebSocket) => {
+  connectedClients.add(ws);
+  console.log('🔌 Client connected to Real-Time WebSockets stream (Total active:', connectedClients.size, ')');
+
+  ws.on('close', () => {
+    connectedClients.delete(ws);
+    console.log('❌ Client disconnected (Total active:', connectedClients.size, ')');
+  });
+});
+
+// Broadcast real-time seat inventory updates to all active clients (< 150ms latency)
+function broadcastSeatUpdate(class_id: string, available_seats: number) {
+  const message = JSON.stringify({
+    type: 'SEAT_UPDATED',
+    class_id,
+    available_seats,
+    timestamp: new Date().toISOString()
+  });
+
+  connectedClients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(message);
+    }
+  });
+}
+
 app.use(cors());
 app.use(express.json());
 
-// PostgreSQL Connection Pool
+// PostgreSQL Pool
 const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
 
-// ===================================================
-// 1. DATABASE INITIALIZATION & SEEDING
-// ===================================================
+// Database Init & Seeding
 async function initDB() {
   try {
-    // Create Tables
     await pool.query(`
       CREATE TABLE IF NOT EXISTS users (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -65,7 +95,6 @@ async function initDB() {
       );
     `);
 
-    // Seed Sample Classes if empty
     const classCount = await pool.query(`SELECT COUNT(*) FROM classes`);
     if (parseInt(classCount.rows[0].count) === 0) {
       await pool.query(`
@@ -83,7 +112,7 @@ async function initDB() {
   }
 }
 
-// Middleware: Authenticate JWT Token
+// Auth Middleware
 function authenticateToken(req: any, res: Response, next: any) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -97,9 +126,7 @@ function authenticateToken(req: any, res: Response, next: any) {
   });
 }
 
-// ===================================================
-// 2. AUTHENTICATION ROUTES
-// ===================================================
+// Authentication Routes
 app.post('/api/auth/signup', async (req: Request, res: Response) => {
   const { email, password, role } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
@@ -139,9 +166,7 @@ app.post('/api/auth/login', async (req: Request, res: Response) => {
   }
 });
 
-// ===================================================
-// 3. CLASS CATALOG ROUTE
-// ===================================================
+// Catalog Route
 app.get('/api/classes', async (req: Request, res: Response) => {
   try {
     const result = await pool.query(`SELECT * FROM classes ORDER BY scheduled_time ASC`);
@@ -151,10 +176,7 @@ app.get('/api/classes', async (req: Request, res: Response) => {
   }
 });
 
-// ===================================================
-// 4. ATOMIC CLASS BOOKING ROUTE (PRD Section 7.3 & US-201)
-// PostgreSQL Row-Level Lock (SELECT FOR UPDATE)
-// ===================================================
+// Atomic Booking Route with Real-Time WebSocket Broadcast
 app.post('/api/bookings', authenticateToken, async (req: any, res: Response) => {
   const { class_id } = req.body;
   const user_id = req.user.userId;
@@ -164,10 +186,8 @@ app.post('/api/bookings', authenticateToken, async (req: any, res: Response) => 
   const client = await pool.connect();
 
   try {
-    // 1. Begin ACID Transaction
     await client.query('BEGIN');
 
-    // 2. Check for Duplicate Active Booking (PRD Scenario: Double-Booking Check)
     const existingBooking = await client.query(
       `SELECT id FROM bookings WHERE user_id = $1 AND class_id = $2 AND status = 'booked'`,
       [user_id, class_id]
@@ -178,7 +198,6 @@ app.post('/api/bookings', authenticateToken, async (req: any, res: Response) => 
       return res.status(422).json({ error: 'You have already booked this class' });
     }
 
-    // 3. Acquire Row-Level Lock on Class Record (SELECT ... FOR UPDATE)
     const classResult = await client.query(
       `SELECT available_seats FROM classes WHERE id = $1 FOR UPDATE`,
       [class_id]
@@ -186,38 +205,37 @@ app.post('/api/bookings', authenticateToken, async (req: any, res: Response) => 
 
     if (classResult.rows.length === 0) {
       await client.query('ROLLBACK');
-      return res.status(444).json({ error: 'Class not found' });
+      return res.status(404).json({ error: 'Class not found' });
     }
 
     const availableSeats = classResult.rows[0].available_seats;
 
-    // 4. Validate Inventory
     if (availableSeats <= 0) {
       await client.query('ROLLBACK');
       return res.status(409).json({ error: 'Slot Filled. Class is fully booked.' });
     }
 
-    // 5. Atomic Update: Decrement Seat Count
-    await client.query(
-      `UPDATE classes SET available_seats = available_seats - 1 WHERE id = $1`,
+    const updatedClass = await client.query(
+      `UPDATE classes SET available_seats = available_seats - 1 WHERE id = $1 RETURNING available_seats`,
       [class_id]
     );
 
-    // 6. Insert Booking Record
     const bookingResult = await client.query(
       `INSERT INTO bookings (user_id, class_id, status) VALUES ($1, $2, 'booked') RETURNING *`,
       [user_id, class_id]
     );
 
-    // 7. Commit Transaction
     await client.query('COMMIT');
 
-    const booking = bookingResult.rows[0];
+    const newSeats = updatedClass.rows[0].available_seats;
+
+    // ⚡ REAL-TIME WEBSOCKET BROADCAST TO ALL CONNECTED CLIENTS
+    broadcastSeatUpdate(class_id, newSeats);
 
     res.status(201).json({
       message: 'Booking confirmed',
-      booking,
-      remaining_seats: availableSeats - 1
+      booking: bookingResult.rows[0],
+      remaining_seats: newSeats
     });
 
   } catch (err: any) {
@@ -229,45 +247,21 @@ app.post('/api/bookings', authenticateToken, async (req: any, res: Response) => 
   }
 });
 
-// ===================================================
-// 5. PAGINATED ATTENDANCE HISTORY (PRD Section 10.3 FR-08/FR-09 & US-301)
-// ===================================================
+// History Route
 app.get('/api/bookings/my-history', authenticateToken, async (req: any, res: Response) => {
   const user_id = req.user.userId;
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 10;
   const offset = (page - 1) * limit;
-  const statusFilter = req.query.status as string; // Optional: 'booked', 'attended', 'cancelled'
 
   try {
-    let queryText = `
-      SELECT 
-        b.id AS booking_id,
-        b.status,
-        b.created_at AS booked_at,
-        c.id AS class_id,
-        c.name AS class_name,
-        c.trainer,
-        c.scheduled_time
-      FROM bookings b
-      JOIN classes c ON b.class_id = c.id
-      WHERE b.user_id = $1
-    `;
+    const result = await pool.query(
+      `SELECT b.id AS booking_id, b.status, b.created_at AS booked_at, c.id AS class_id, c.name AS class_name, c.trainer, c.scheduled_time
+       FROM bookings b JOIN classes c ON b.class_id = c.id
+       WHERE b.user_id = $1 ORDER BY b.created_at DESC LIMIT $2 OFFSET $3`,
+      [user_id, limit, offset]
+    );
 
-    const queryParams: any[] = [user_id];
-
-    if (statusFilter) {
-      queryParams.push(statusFilter);
-      queryText += ` AND b.status = $${queryParams.length}`;
-    }
-
-    queryText += ` ORDER BY b.created_at DESC LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
-    queryParams.push(limit, offset);
-
-    // Fetch paginated rows
-    const result = await pool.query(queryText, queryParams);
-
-    // Fetch total count for pagination metadata
     const countResult = await pool.query(`SELECT COUNT(*) FROM bookings WHERE user_id = $1`, [user_id]);
     const totalRecords = parseInt(countResult.rows[0].count);
 
@@ -279,14 +273,11 @@ app.get('/api/bookings/my-history', authenticateToken, async (req: any, res: Res
       history: result.rows
     });
   } catch (err) {
-    console.error('Attendance history error:', err);
     res.status(500).json({ error: 'Failed to fetch attendance history' });
   }
 });
 
-// ===================================================
-// 6. ATOMIC CANCELLATION & SEAT RE-OPENING ENGINE
-// ===================================================
+// Cancellation Route with Real-Time WebSocket Broadcast
 app.post('/api/bookings/cancel', authenticateToken, async (req: any, res: Response) => {
   const { booking_id } = req.body;
   const user_id = req.user.userId;
@@ -296,10 +287,8 @@ app.post('/api/bookings/cancel', authenticateToken, async (req: any, res: Respon
   const client = await pool.connect();
 
   try {
-    // 1. Begin ACID Transaction
     await client.query('BEGIN');
 
-    // 2. Fetch booking with Row Lock
     const bookingResult = await client.query(
       `SELECT * FROM bookings WHERE id = $1 AND user_id = $2 AND status = 'booked' FOR UPDATE`,
       [booking_id, user_id]
@@ -312,43 +301,149 @@ app.post('/api/bookings/cancel', authenticateToken, async (req: any, res: Respon
 
     const booking = bookingResult.rows[0];
 
-    // 3. Update booking status to 'cancelled'
-    await client.query(
-      `UPDATE bookings SET status = 'cancelled' WHERE id = $1`,
-      [booking_id]
-    );
+    await client.query(`UPDATE bookings SET status = 'cancelled' WHERE id = $1`, [booking_id]);
 
-    // 4. Atomically Reopen Seat (Increment available_seats)
     const classResult = await client.query(
       `UPDATE classes SET available_seats = available_seats + 1 WHERE id = $1 RETURNING available_seats`,
       [booking.class_id]
     );
 
-    // 5. Commit Transaction
     await client.query('COMMIT');
+
+    const newSeats = classResult.rows[0].available_seats;
+
+    // ⚡ REAL-TIME WEBSOCKET BROADCAST TO ALL CONNECTED CLIENTS
+    broadcastSeatUpdate(booking.class_id, newSeats);
 
     res.json({
       message: 'Booking cancelled successfully. Seat reopened!',
       booking_id,
-      new_available_seats: classResult.rows[0].available_seats
+      new_available_seats: newSeats
     });
 
   } catch (err) {
     await client.query('ROLLBACK');
-    console.error('Cancellation error:', err);
     res.status(500).json({ error: 'Failed to cancel booking' });
   } finally {
     client.release();
   }
 });
 
-// Health Check Route
-app.get('/api/health', (req: Request, res: Response) => {
-  res.json({ status: 'OK', message: 'CureFit Backend Engine is Live!' });
+// ===================================================
+// 7. ADMIN ROSTER & AUDIT LOGGING (PRD Section 7.4 & US-401)
+// ===================================================
+
+// Middleware: Verify Owner/Admin Role
+function requireOwnerRole(req: any, res: Response, next: any) {
+  if (req.user?.role !== 'Owner') {
+    return res.status(403).json({ error: 'Forbidden: Owner role required' });
+  }
+  next();
+}
+
+// Get Class Roster (Owner Only)
+app.get('/api/classes/:id/roster', authenticateToken, requireOwnerRole, async (req: Request, res: Response) => {
+  const class_id = req.params.id;
+
+  try {
+    const result = await pool.query(
+      `SELECT b.id AS booking_id, b.status, u.id AS user_id, u.email, b.created_at AS booked_at
+       FROM bookings b
+       JOIN users u ON b.user_id = u.id
+       WHERE b.class_id = $1 AND b.status = 'booked'
+       ORDER BY b.created_at ASC`,
+      [class_id]
+    );
+
+    res.json({ class_id, roster: result.rows });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch class roster' });
+  }
 });
 
-// Start Server
-app.listen(PORT, async () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+// Update Attendance Status & Create Audit Log (Owner Only)
+app.patch('/api/bookings/:id/status', authenticateToken, requireOwnerRole, async (req: any, res: Response) => {
+  const booking_id = req.params.id;
+  const { status } = req.body; // 'attended' or 'no_show'
+  const operator_id = req.user.userId;
+
+  if (!['attended', 'no_show'].includes(status)) {
+    return res.status(400).json({ error: 'Status must be attended or no_show' });
+  }
+
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    // Fetch existing booking
+    const bookingResult = await client.query(`SELECT * FROM bookings WHERE id = $1 FOR UPDATE`, [booking_id]);
+    if (bookingResult.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Booking not found' });
+    }
+
+    const previousBooking = bookingResult.rows[0];
+
+    // Update Status
+    const updateResult = await client.query(
+      `UPDATE bookings SET status = $1 WHERE id = $2 RETURNING *`,
+      [status, booking_id]
+    );
+
+    // Create Audit Log (PRD FR-04 Audit Trail)
+    await client.query(
+      `INSERT INTO audit_logs (operator_id, target_id, action_type, previous_state, new_state)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [
+        operator_id,
+        booking_id,
+        'ATTENDANCE_STATUS_UPDATE',
+        JSON.stringify(previousBooking),
+        JSON.stringify(updateResult.rows[0])
+      ]
+    );
+
+    await client.query('COMMIT');
+
+    res.json({
+      message: `Booking status updated to ${status}`,
+      booking: updateResult.rows[0]
+    });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    res.status(500).json({ error: 'Failed to update attendance status' });
+  } finally {
+    client.release();
+  }
+});
+
+// ===================================================
+// GET ALL USERS ENDPOINT (Owner/Admin Only)
+// ===================================================
+app.get('/api/users', authenticateToken, requireOwnerRole, async (req: Request, res: Response) => {
+  try {
+    // Select all users, excluding password hashes for security
+    const result = await pool.query(
+      `SELECT id, email, role, created_at FROM users ORDER BY created_at DESC`
+    );
+
+    res.json({
+      totalUsers: result.rows.length,
+      users: result.rows
+    });
+  } catch (err) {
+    console.error('Fetch users error:', err);
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+
+app.get('/api/health', (req: Request, res: Response) => {
+  res.json({ status: 'OK', message: 'CureFit Backend & Real-time WebSocket Engine is Live!' });
+});
+
+// Start HTTP + WebSockets Server
+server.listen(PORT, async () => {
+  console.log(`🚀 Server & WebSockets running on http://localhost:${PORT}`);
   await initDB();
 });
