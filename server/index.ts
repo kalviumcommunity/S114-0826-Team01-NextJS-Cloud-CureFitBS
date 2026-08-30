@@ -95,15 +95,22 @@ async function initDB() {
       );
     `);
 
+    // Seed 8 varied classes if needed
     const classCount = await pool.query(`SELECT COUNT(*) FROM classes`);
-    if (parseInt(classCount.rows[0].count) === 0) {
+    if (parseInt(classCount.rows[0].count) < 8) {
+      await pool.query(`DELETE FROM classes;`); // Clear old seed
       await pool.query(`
         INSERT INTO classes (name, trainer, capacity, available_seats, scheduled_time) VALUES
-        ('Cult Dance Fitness', 'Coach Rahul', 20, 3, NOW() + INTERVAL '1 day'),
-        ('HRX Workout', 'Coach Ankit', 15, 1, NOW() + INTERVAL '2 days'),
-        ('Yoga & Mobility', 'Coach Priya', 10, 0, NOW() + INTERVAL '3 days');
+        ('Cult Dance Fitness', 'Coach Rahul', 20, 15, NOW() + INTERVAL '1 day'),
+        ('HRX Strength Pro', 'Coach Ankit', 15, 10, NOW() + INTERVAL '1 day'),
+        ('Yoga & Breathwork', 'Coach Priya', 12, 8, NOW() + INTERVAL '2 days'),
+        ('Pro Boxing Fit', 'Coach Vikram', 12, 5, NOW() + INTERVAL '2 days'),
+        ('Bollywood Cardio', 'Coach Neha', 18, 12, NOW() + INTERVAL '3 days'),
+        ('Zumba Burnout', 'Coach Sneha', 25, 20, NOW() + INTERVAL '3 days'),
+        ('Pilates Core', 'Coach Ritu', 10, 2, NOW() + INTERVAL '4 days'),
+        ('HIIT Sweat Circuit', 'Coach Kabir', 15, 1, NOW() + INTERVAL '4 days');
       `);
-      console.log('🌱 Seeded initial workout classes!');
+      console.log('🌱 Seeded 8 varied workout classes!');
     }
 
     console.log('✅ PostgreSQL Database & Tables Connected Successfully!');
@@ -111,6 +118,24 @@ async function initDB() {
     console.error('❌ Database Initialization Error:', err);
   }
 }
+
+// 🔄 DEV HELPER: RESET ALL BOOKINGS & RESTORE FULL SEAT CAPACITY
+app.post('/api/admin/reset', async (req: Request, res: Response) => {
+  try {
+    // Delete all bookings and restore available_seats = capacity
+    await pool.query(`DELETE FROM bookings;`);
+    await pool.query(`UPDATE classes SET available_seats = capacity;`);
+
+    // Broadcast live WebSocket update for all classes
+    const classResult = await pool.query(`SELECT id, available_seats FROM classes`);
+    classResult.rows.forEach((cls) => broadcastSeatUpdate(cls.id, cls.available_seats));
+
+    res.json({ message: '✅ All bookings cleared & seat counts reset to full capacity!' });
+  } catch (err) {
+    console.error('Reset error:', err);
+    res.status(500).json({ error: 'Failed to reset database' });
+  }
+});
 
 // Auth Middleware
 function authenticateToken(req: any, res: Response, next: any) {
