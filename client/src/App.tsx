@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
 // Environment Resolution
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api';
-const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_BASE || 'https://onrender.com';
+const WS_URL = import.meta.env.VITE_WS_URL || 'wss://s114-0826-team01-nextjs-cloud-curefitbs-jrmt.onrender.com';
+
 
 // Global Typography Styles (Bricolage Grotesque, Inter, IBM Plex Mono)
 const globalStyles = `
@@ -42,13 +43,16 @@ interface BookingHistory {
   scheduled_time: string;
 }
 
-// Helper: Real Unsplash Images for Workout Classes
+// Helper: Real Unsplash Images for 8 Workout Classes
 const getClassImage = (name: string) => {
   const lower = name.toLowerCase();
   if (lower.includes('dance')) return 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&auto=format&fit=crop';
   if (lower.includes('hrx') || lower.includes('strength')) return 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=600&auto=format&fit=crop';
-  if (lower.includes('yoga') || lower.includes('mobility')) return 'https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=600&auto=format&fit=crop';
-  return 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=600&auto=format&fit=crop';
+  if (lower.includes('yoga') || lower.includes('breathwork')) return 'https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=600&auto=format&fit=crop';
+  if (lower.includes('boxing')) return 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=600&auto=format&fit=crop';
+  if (lower.includes('bollywood') || lower.includes('zumba')) return 'https://images.unsplash.com/photo-1524594152303-9fd13543fe6e?w=600&auto=format&fit=crop';
+  if (lower.includes('pilates')) return 'https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=600&auto=format&fit=crop';
+  return 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600&auto=format&fit=crop';
 };
 
 export default function App() {
