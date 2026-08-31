@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch server/index.ts",
+    "build": "echo 'No build required for server'",
+    "start": "tsx server/index.ts",
     "client": "vite client",
     "test:concurrency": "node scripts/test-concurrency.js"
   },
