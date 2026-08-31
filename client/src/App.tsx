@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
 // Environment Resolution
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api';
-const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_BASE || 'https://onrender.com';
+const WS_URL = import.meta.env.VITE_WS_URL || 'wss://s114-0826-team01-nextjs-cloud-curefitbs-jrmt.onrender.com';
+
 
 // Global Typography Styles (Bricolage Grotesque, Inter, IBM Plex Mono)
 const globalStyles = `
