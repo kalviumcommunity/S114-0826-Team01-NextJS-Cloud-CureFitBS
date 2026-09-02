@@ -8,7 +8,8 @@ async function runConcurrencyTest() {
   try {
     // 1. Fetch available classes to get a target class
     const classesRes = await fetch(`${API_BASE}/classes`);
-    const classes = await classesRes.json();
+    const classesData = await classesRes.json();
+    const classes = Array.isArray(classesData) ? classesData : classesData.classes;
 
     if (!Array.isArray(classes) || classes.length === 0) {
       console.error('❌ No classes found. Make sure backend server is running on http://localhost:5000!');
@@ -16,8 +17,9 @@ async function runConcurrencyTest() {
     }
 
     const targetClass = classes[0];
-    console.log(`🎯 Target Class: "${targetClass.name}" (ID: ${targetClass.id})`);
-    console.log(`📊 Initial Available Seats: ${targetClass.available_seats}\n`);
+    const initialAvailableSeats = targetClass.available_seats ?? targetClass.availableSeats;
+    console.log(`🎯 Target Class: "${targetClass.name || targetClass.title}" (ID: ${targetClass.id})`);
+    console.log(`📊 Initial Available Seats: ${initialAvailableSeats}\n`);
 
     // 2. Register 100 unique simulated members to get 100 valid JWT tokens
     console.log('👤 Registering 100 unique simulated members...');
@@ -85,7 +87,7 @@ async function runConcurrencyTest() {
     if (successCount === 1) {
       console.log('✅ TEST PASSED: Exactly 1 reservation succeeded!');
       console.log('🔒 PostgreSQL row locking (SELECT FOR UPDATE) prevented all double-bookings!');
-    } else if (successCount <= targetClass.available_seats) {
+    } else if (successCount <= initialAvailableSeats) {
       console.log(`✅ TEST PASSED: ${successCount} reservation(s) succeeded matching exact available capacity!`);
     } else {
       console.log(`⚠️ OVERBOOKING DETECTED: ${successCount} bookings succeeded.`);

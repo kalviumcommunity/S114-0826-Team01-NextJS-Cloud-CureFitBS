@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+:root {
+  --c-bg: #f7f6f2;
+  --c-surface: #ffffff;
+  --c-surface-hover: #f1f3ee;
+  --c-surface-soft: #eef2ed;
+  --c-ink: #1b1d1b;
+  --c-accent: #405548;
+  --c-accent-hover: #304638;
+  --c-accent-light: #e8eee9;
+  --c-muted: #69736d;
+  --c-border: #e2e1dc;
+  --c-border-subtle: #ecebe6;
+}
+
+body {
+  background-color: #f7f6f2;
+  color: #1b1d1b;
+  font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+}
+
+.font-serif {
+  font-family: 'Newsreader', 'Georgia', 'Playfair Display', serif;
+}
+
+.font-editorial {
+  font-family: 'Newsreader', 'Georgia', serif;
+}
+
+/* Shared visual language for the light editorial reference UI. */
+.glow-emerald {
+  box-shadow: 0 0 25px rgba(0, 240, 118, 0.25);
+}
+
+.glow-emerald-sm {
+  box-shadow: 0 0 15px rgba(0, 240, 118, 0.15);
+}
+
+.glow-emerald-subtle {
+  box-shadow: 0 0 30px rgba(0, 240, 118, 0.08);
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: inline-flex;
+  animation: marquee 38s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Custom sleek dark scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f7f6f2;
+}
+::-webkit-scrollbar-thumb {
+  background: #cfd5cf;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #405548;
+}
+
+/* Existing pages use Tailwind utility colors inline. Re-map those tokens here
+   so their behavior remains intact while the product adopts the new palette. */
+[class*="bg-[#090D0A]"], [class*="bg-[#060907]"], [class*="bg-[#0B0F0C]"], [class*="bg-[#0D120E]"],
+[class*="bg-[#0D130F]"], [class*="bg-[#0F1611]"], [class*="bg-[#121814]"],
+[class*="bg-[#131A15]"], [class*="bg-[#161F1A]"], [class*="bg-[#1A241F]"],
+[class*="bg-[#1A251F]"], [class*="bg-[#18221C]"], [class*="bg-[#1C2721]"] {
+  background-color: #ffffff !important;
+}
+
+[class*="bg-gradient-to-b"] {
+  background-image: none !important;
+  background-color: #f7f6f2 !important;
+}
+
+[class*="text-white"], [class*="text-[#E2E8E4]"], [class*="text-[#D1DDD5]"],
+[class*="text-[#F1F5F2]"] { color: #1b1d1b !important; }
+[class*="text-[#9AA8A0]"], [class*="text-[#8A9A90]"], [class*="text-[#6B7C72]"] {
+  color: #69736d !important;
+}
+[class*="text-[#00F076]"], [class*="text-[#10B981]"] { color: #405548 !important; }
+[class*="bg-[#00F076]"] { background-color: #405548 !important; color: #ffffff !important; }
+[class*="border-[#00F076]"], [class*="border-[#00F076]/"] { border-color: #91a397 !important; }
+[class*="border-[#1F2B22]"], [class*="border-[#223227]"], [class*="border-[#1C271F]"],
+[class*="border-[#162019]"] { border-color: #e2e1dc !important; }
+[class*="placeholder-[#6B7C72]"]::placeholder { color: #9ba39d !important; }
+[class*="shadow-[0_0"] { box-shadow: 0 8px 22px rgba(46, 57, 49, 0.08) !important; }
+
+input, select { color: #1b1d1b; background-color: #ffffff; }
