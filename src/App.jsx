@@ -134,7 +134,7 @@ const AppContent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#090D0A] text-slate-100 flex flex-col selection:bg-[#00F076] selection:text-black">
+    <div className="min-h-screen bg-[#F7F6F2] text-[#1B1D1B] flex flex-col selection:bg-[#405548] selection:text-white">
       {/* Global Navigation */}
       <Navbar
         currentPath={currentPath}

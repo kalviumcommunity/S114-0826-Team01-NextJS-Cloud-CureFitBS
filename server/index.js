@@ -10,7 +10,7 @@ import { WebSocket, WebSocketServer } from 'ws';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-curefit-key-2026';
 
 // 1. HTTP & WebSocket Server Setup
