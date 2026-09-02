@@ -1,0 +1,594 @@
+{
+  "users": [
+    {
+      "id": "user-rahul-01",
+      "name": "Rahul Sharma",
+      "email": "usethinkpad27@gmail.com",
+      "passwordHash": "$2b$10$VRCTY0Bus0o/5e054em2C.UAfnnH9N0sM3catS5SbfFbICuCbvFna",
+      "phone": "+91 98765 43210",
+      "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
+      "membership": "Pro Member",
+      "fitnessGoal": "Hypertrophy & Endurance Conditioning",
+      "stats": {
+        "classesCount": 84,
+        "streakDays": 12,
+        "caloriesBurned": 24000,
+        "favoriteWorkout": "HRX"
+      },
+      "preferences": {
+        "emailNotifications": true,
+        "smsReminders": true,
+        "reminderHoursBefore": 2,
+        "soundEffects": true,
+        "theme": "dark"
+      },
+      "createdAt": "2026-06-03T10:39:27.515Z"
+    },
+    {
+      "id": "user-demo-02",
+      "name": "Ananya Verma",
+      "email": "ananya@curefit.com",
+      "passwordHash": "$2b$10$Os19dlqDjeM2I.l/l4RmReGqYG9heyDS3rCcRYAAiTb3OIeSlcdfO",
+      "phone": "+91 98111 22334",
+      "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80",
+      "membership": "Elite Member",
+      "fitnessGoal": "Flexibility & Dance",
+      "stats": {
+        "classesCount": 42,
+        "streakDays": 7,
+        "caloriesBurned": 12800,
+        "favoriteWorkout": "Dance"
+      },
+      "preferences": {
+        "emailNotifications": true,
+        "smsReminders": true,
+        "reminderHoursBefore": 1,
+        "soundEffects": true,
+        "theme": "dark"
+      },
+      "createdAt": "2026-08-02T10:39:27.636Z"
+    }
+  ],
+  "classes": [
+    {
+      "id": "class-cult-dance",
+      "title": "Cult Dance Fitness",
+      "category": "Dance",
+      "coach": "Coach Rahul",
+      "coachTitle": "Senior Fitness Instructor • Certified Strength & Conditioning Specialist",
+      "coachBio": "Rahul has over 8 years of dance workout experience and has coached 15,000+ athletes. Specializes in Bollywood, Zumba, and high-energy rhythmic conditioning.",
+      "coachAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+      "image": "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&auto=format&fit=crop&q=80",
+      "price": 599,
+      "duration": 50,
+      "capacity": 20,
+      "availableSeats": 15,
+      "timeSlots": [
+        "07:00 AM",
+        "10:00 AM",
+        "06:30 PM"
+      ],
+      "intensity": "High",
+      "description": "Cult Dance Fitness is a high-energy group session designed to burn calories and release endorphins. Coached by expert trainers at premier studio locations with energizing chartbuster beats.",
+      "location": "CureFit Studio, Indiranagar",
+      "rating": 4.9,
+      "reviewCount": 3420,
+      "tags": [
+        "Cardio",
+        "Dance",
+        "Fat Burn",
+        "Beginner Friendly"
+      ],
+      "benefits": [
+        "Burns up to 550 kcal",
+        "Boosts coordination & rhythm",
+        "High dopamine release"
+      ],
+      "equipment": [
+        "Water bottle",
+        "Gym sneakers",
+        "Towel"
+      ]
+    },
+    {
+      "id": "class-hrx-strength",
+      "title": "HRX Strength Pro",
+      "category": "Strength",
+      "coach": "Coach Ankit",
+      "coachTitle": "Lead Bodybuilding Coach • Olympic Weightlifting Certified",
+      "coachBio": "Former national athlete with 10+ years coaching experience. Focuses on compound movements, progressive overload, and hypertrophy.",
+      "coachAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+      "image": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800&auto=format&fit=crop&q=80",
+      "price": 599,
+      "duration": 55,
+      "capacity": 15,
+      "availableSeats": 15,
+      "timeSlots": [
+        "06:30 AM",
+        "08:00 AM",
+        "07:00 PM"
+      ],
+      "intensity": "High",
+      "description": "HRX Strength builds raw muscular power, core stability, and athletic stamina. Designed by fitness icons for targeted lean muscle development.",
+      "location": "CureFit Studio, Koramangala",
+      "rating": 4.95,
+      "reviewCount": 4890,
+      "tags": [
+        "Barbell",
+        "Hypertrophy",
+        "Core Strength",
+        "Power"
+      ],
+      "benefits": [
+        "Full body compound strength",
+        "Metabolic rate acceleration",
+        "Posture correction"
+      ],
+      "equipment": [
+        "Lifting belt (optional)",
+        "Grip straps",
+        "Training shoes"
+      ]
+    },
+    {
+      "id": "class-yoga-breathwork",
+      "title": "Yoga & Breathwork",
+      "category": "Yoga",
+      "coach": "Coach Priya",
+      "coachTitle": "Master Yogi (RYT-500) • Pranayama & Mindfulness Specialist",
+      "coachBio": "Priya studied classical Ashtanga and Vinyasa in Rishikesh. Her sessions combine mobility, restorative breathwork, and mental serenity.",
+      "coachAvatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80",
+      "image": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&auto=format&fit=crop&q=80",
+      "price": 599,
+      "duration": 60,
+      "capacity": 12,
+      "availableSeats": 12,
+      "timeSlots": [
+        "06:00 AM",
+        "07:30 AM",
+        "05:30 PM"
+      ],
+      "intensity": "Moderate",
+      "description": "An immersive flow focusing on spine alignment, deep fascia release, and diaphragmatic breathwork to reset stress and restore vitality.",
+      "location": "CureFit Studio, HSR Layout",
+      "rating": 4.9,
+      "reviewCount": 2850,
+      "tags": [
+        "Flexibility",
+        "Mindfulness",
+        "Breathwork",
+        "Recovery"
+      ],
+      "benefits": [
+        "Reduces cortisol by 35%",
+        "Improves joint range of motion",
+        "Better sleep quality"
+      ],
+      "equipment": [
+        "Yoga mat provided",
+        "Comfortable stretch wear"
+      ]
+    },
+    {
+      "id": "class-pro-boxing",
+      "title": "Pro Boxing Fit",
+      "category": "Boxing",
+      "coach": "Coach Vikram",
+      "coachTitle": "State Champion Boxer • Combat Conditioning Specialist",
+      "coachBio": "Vikram teaches authentic punch mechanics, footwork drills, heavy bag conditioning, and agility circuits without full-contact sparring.",
+      "coachAvatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
+      "image": "https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=800&auto=format&fit=crop&q=80",
+      "price": 599,
+      "duration": 45,
+      "capacity": 12,
+      "availableSeats": 5,
+      "timeSlots": [
+        "07:00 AM",
+        "09:00 AM",
+        "06:00 PM",
+        "08:00 PM"
+      ],
+      "intensity": "Extreme",
+      "description": "High-octane boxing conditioning that works heavy bags, speed drills, and core rotational power. Torch maximum calories while sharpening reflexes.",
+      "location": "CureFit Studio, Whitefield",
+      "rating": 4.88,
+      "reviewCount": 1940,
+      "tags": [
+        "Boxing",
+        "Reflexes",
+        "High Intensity",
+        "Cardio"
+      ],
+      "benefits": [
+        "Burn up to 700 kcal",
+        "Superior hand-eye coordination",
+        "Stress relief"
+      ],
+      "equipment": [
+        "Hand wraps provided",
+        "Boxing gloves provided"
+      ]
+    },
+    {
+      "id": "class-bollywood-cardio",
+      "title": "Bollywood Cardio",
+      "category": "Dance",
+      "coach": "Coach Neha",
+      "coachTitle": "Celebrity Choreographer • Group Fitness Specialist",
+      "coachBio": "Neha brings the infectious energy of Indian cinema to fitness. Non-stop dancing to the biggest Bollywood hits with easy-to-follow choreography.",
+      "coachAvatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+      "image": "https://images.unsplash.com/photo-1524594152303-9fd13543fe6e?w=800&auto=format&fit=crop&q=80",
+      "price": 599,
+      "duration": 50,
+      "capacity": 18,
+      "availableSeats": 18,
+      "timeSlots": [
+        "08:00 AM",
+        "11:00 AM",
+        "07:30 PM"
+      ],
+      "intensity": "Moderate",
+      "description": "Fun, vibrant dance moves set to iconic Bollywood tracks. Sweaty, joyful, and beginner-friendly workout for all ages.",
+      "location": "CureFit Studio, Indiranagar",
+      "rating": 4.85,
+      "reviewCount": 2200,
+      "tags": [
+        "Bollywood",
+        "Aerobics",
+        "Fun Workout",
+        "Rhythm"
+      ],
+      "benefits": [
+        "Cardiovascular conditioning",
+        "Mood booster",
+        "Full body engagement"
+      ],
+      "equipment": [
+        "Gym shoes",
+        "Water bottle"
+      ]
+    },
+    {
+      "id": "class-zumba-burnout",
+      "title": "Zumba Burnout",
+      "category": "Dance",
+      "coach": "Coach Sneha",
+      "coachTitle": "Licensed Zumba Instructor (ZIN) • Latin Dance Specialist",
+      "coachBio": "Sneha blends salsa, merengue, reggaeton, and cumbia into an electrifying fitness dance party.",
+      "coachAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+      "image": "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&auto=format&fit=crop&q=80",
+      "price": 599,
+      "duration": 50,
+      "capacity": 25,
+      "availableSeats": 25,
+      "timeSlots": [
+        "07:30 AM",
+        "10:30 AM",
+        "05:00 PM"
+      ],
+      "intensity": "Moderate",
+      "description": "Take the work out of workout by mixing low-intensity and high-intensity moves for an interval-style, calorie-burning dance fitness party.",
+      "location": "CureFit Studio, Bellandur",
+      "rating": 4.87,
+      "reviewCount": 3100,
+      "tags": [
+        "Zumba",
+        "Dance Party",
+        "Intervals",
+        "All Levels"
+      ],
+      "benefits": [
+        "Burns 450-600 kcal",
+        "Tones legs and core",
+        "Endorphin surge"
+      ],
+      "equipment": [
+        "Sport sneakers",
+        "Workout clothes"
+      ]
+    },
+    {
+      "id": "class-pilates-core",
+      "title": "Pilates Core",
+      "category": "Pilates",
+      "coach": "Coach Ritu",
+      "coachTitle": "Stott Pilates Certified Instructor • Posture Specialist",
+      "coachBio": "Ritu focuses on pelvic floor integration, deep transverse abdominis activation, and micro-movements for a sculpted, lean physique.",
+      "coachAvatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80",
+      "image": "https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=800&auto=format&fit=crop&q=80",
+      "price": 599,
+      "duration": 50,
+      "capacity": 10,
+      "availableSeats": 2,
+      "timeSlots": [
+        "08:30 AM",
+        "10:00 AM",
+        "06:00 PM"
+      ],
+      "intensity": "High",
+      "description": "Precision mat pilates targeting the powerhouse: abdominal wall, lower back, hips, and glutes. Low impact with intense burn.",
+      "location": "CureFit Studio, Jayanagar",
+      "rating": 4.92,
+      "reviewCount": 1680,
+      "tags": [
+        "Core",
+        "Pilates",
+        "Sculpt",
+        "Low Impact"
+      ],
+      "benefits": [
+        "Relieves back pain",
+        "Tightens core muscles",
+        "Enhances flexibility"
+      ],
+      "equipment": [
+        "Grip socks recommended",
+        "Pilates ring provided"
+      ]
+    },
+    {
+      "id": "class-hiit-sweat",
+      "title": "HIIT Sweat Circuit",
+      "category": "HIIT",
+      "coach": "Coach Kabir",
+      "coachTitle": "CrossFit Level 2 Coach • HIIT Performance Specialist",
+      "coachBio": "Kabir designs functional interval workouts using kettlebells, battle ropes, ski ergs, and plyometrics for peak athletic performance.",
+      "coachAvatar": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop&q=80",
+      "image": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80",
+      "price": 599,
+      "duration": 45,
+      "capacity": 15,
+      "availableSeats": 1,
+      "timeSlots": [
+        "06:00 AM",
+        "07:30 AM",
+        "06:30 PM",
+        "08:00 PM"
+      ],
+      "intensity": "Extreme",
+      "description": "Maximum effort intervals paired with short recovery periods. Push cardiovascular thresholds, ignite afterburn, and shatter personal fitness boundaries.",
+      "location": "CureFit Studio, Koramangala",
+      "rating": 4.96,
+      "reviewCount": 3950,
+      "tags": [
+        "HIIT",
+        "Sweat",
+        "Functional",
+        "Afterburn"
+      ],
+      "benefits": [
+        "EPOC effect burns calories for 24h",
+        "Builds VO2 max",
+        "Peak stamina"
+      ],
+      "equipment": [
+        "Cross-training shoes",
+        "Hydration drink"
+      ]
+    }
+  ],
+  "bookings": [
+    {
+      "id": "CURE-8921",
+      "userId": "user-rahul-01",
+      "userEmail": "usethinkpad27@gmail.com",
+      "userName": "Rahul Sharma",
+      "classId": "class-hrx-strength",
+      "classTitle": "HRX Strength Pro",
+      "classCategory": "Strength",
+      "coach": "Coach Ankit",
+      "image": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800&auto=format&fit=crop&q=80",
+      "date": "2026-09-02",
+      "timeSlot": "07:00 AM",
+      "price": 599,
+      "status": "Confirmed",
+      "paymentId": "PAY-8921-9921",
+      "paymentStatus": "Paid",
+      "qrPassCode": "CURE-PASS-8921-HRX-PRO",
+      "createdAt": "2026-09-01T08:39:27.636Z"
+    },
+    {
+      "id": "CURE-7412",
+      "userId": "user-rahul-01",
+      "userEmail": "usethinkpad27@gmail.com",
+      "userName": "Rahul Sharma",
+      "classId": "class-cult-dance",
+      "classTitle": "Cult Dance Fitness",
+      "classCategory": "Dance",
+      "coach": "Coach Rahul",
+      "image": "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&auto=format&fit=crop&q=80",
+      "date": "2026-08-30",
+      "timeSlot": "10:00 AM",
+      "price": 599,
+      "status": "Completed",
+      "paymentId": "PAY-7412-1002",
+      "paymentStatus": "Paid",
+      "qrPassCode": "CURE-PASS-7412-DANCE",
+      "createdAt": "2026-08-29T10:39:27.636Z"
+    },
+    {
+      "id": "CURE-6320",
+      "userId": "user-rahul-01",
+      "userEmail": "usethinkpad27@gmail.com",
+      "userName": "Rahul Sharma",
+      "classId": "class-pro-boxing",
+      "classTitle": "Pro Boxing Fit",
+      "classCategory": "Boxing",
+      "coach": "Coach Vikram",
+      "image": "https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=800&auto=format&fit=crop&q=80",
+      "date": "2026-08-27",
+      "timeSlot": "06:00 PM",
+      "price": 599,
+      "status": "Completed",
+      "paymentId": "PAY-6320-5541",
+      "paymentStatus": "Paid",
+      "qrPassCode": "CURE-PASS-6320-BOX",
+      "createdAt": "2026-08-26T10:39:27.636Z"
+    }
+  ],
+  "payments": [],
+  "activities": [
+    {
+      "id": "act-1",
+      "userId": "user-rahul-01",
+      "type": "booking",
+      "title": "Booked HRX Strength Pro",
+      "description": "Confirmed slot for tomorrow at 07:00 AM with Coach Ankit.",
+      "timestamp": "2026-09-01T08:39:27.636Z"
+    },
+    {
+      "id": "act-2",
+      "userId": "user-rahul-01",
+      "type": "payment",
+      "title": "Payment of ₹599 Verified",
+      "description": "Transaction #PAY-8921-9921 processed via UPI Sandbox.",
+      "timestamp": "2026-09-01T08:39:22.636Z"
+    },
+    {
+      "id": "act-3",
+      "userId": "user-rahul-01",
+      "type": "workout",
+      "title": "Completed Cult Dance Fitness",
+      "description": "Burned 480 kcal • 12-day workout streak preserved! 🔥",
+      "timestamp": "2026-08-30T10:39:27.636Z"
+    },
+    {
+      "id": "act-4",
+      "userId": "user-rahul-01",
+      "type": "ai",
+      "title": "AI Workout Recommendation Generated",
+      "description": "Matched with HIIT Sweat Circuit based on strength stamina goals.",
+      "timestamp": "2026-08-29T10:39:27.636Z"
+    },
+    {
+      "id": "act-5",
+      "userId": "user-rahul-01",
+      "type": "auth",
+      "title": "Successful Authentication",
+      "description": "Signed in from Chrome on Web Browser.",
+      "timestamp": "2026-09-01T06:39:27.636Z"
+    }
+  ],
+  "liveEvents": [
+    {
+      "id": "evt-1788292430383",
+      "type": "seat_alert",
+      "text": "⚡ Live alert: Only 2 spots left in Pro Boxing Fit tonight!",
+      "timestamp": "2026-09-01T19:53:50.383Z"
+    },
+    {
+      "id": "evt-1788292415337",
+      "type": "booking",
+      "text": "⚡ Tara J. just booked Cult Dance Fitness • 10:00 AM",
+      "timestamp": "2026-09-01T19:53:35.337Z"
+    },
+    {
+      "id": "evt-1788292400327",
+      "type": "announcement",
+      "text": "🏆 Community milestone: 52,000+ classes completed this month!",
+      "timestamp": "2026-09-01T19:53:20.327Z"
+    },
+    {
+      "id": "evt-1788292385308",
+      "type": "completion",
+      "text": "🔥 Pooja K. smashed HRX Strength • 620 kcal burned!",
+      "timestamp": "2026-09-01T19:53:05.308Z"
+    },
+    {
+      "id": "evt-1788292370269",
+      "type": "announcement",
+      "text": "🏆 Community milestone: 52,000+ classes completed this month!",
+      "timestamp": "2026-09-01T19:52:50.269Z"
+    },
+    {
+      "id": "evt-1788292355227",
+      "type": "seat_alert",
+      "text": "⚡ Live alert: Only 2 spots left in Pro Boxing Fit tonight!",
+      "timestamp": "2026-09-01T19:52:35.227Z"
+    },
+    {
+      "id": "evt-1788292340222",
+      "type": "completion",
+      "text": "🔥 Tara J. smashed HRX Strength • 620 kcal burned!",
+      "timestamp": "2026-09-01T19:52:20.222Z"
+    },
+    {
+      "id": "evt-1788292325209",
+      "type": "seat_alert",
+      "text": "⚡ Live alert: Only 2 spots left in Pro Boxing Fit tonight!",
+      "timestamp": "2026-09-01T19:52:05.209Z"
+    },
+    {
+      "id": "evt-1788292310186",
+      "type": "booking",
+      "text": "⚡ Meera R. just booked Cult Dance Fitness • 10:00 AM",
+      "timestamp": "2026-09-01T19:51:50.186Z"
+    },
+    {
+      "id": "evt-1788292295179",
+      "type": "completion",
+      "text": "🔥 Sneha P. smashed HRX Strength • 620 kcal burned!",
+      "timestamp": "2026-09-01T19:51:35.179Z"
+    },
+    {
+      "id": "evt-1788292280176",
+      "type": "announcement",
+      "text": "🏆 Community milestone: 52,000+ classes completed this month!",
+      "timestamp": "2026-09-01T19:51:20.176Z"
+    },
+    {
+      "id": "evt-1788292265175",
+      "type": "booking",
+      "text": "⚡ Meera R. just booked Cult Dance Fitness • 10:00 AM",
+      "timestamp": "2026-09-01T19:51:05.175Z"
+    },
+    {
+      "id": "evt-1788292249823",
+      "type": "announcement",
+      "text": "🏆 Community milestone: 52,000+ classes completed this month!",
+      "timestamp": "2026-09-01T19:50:49.823Z"
+    },
+    {
+      "id": "evt-1788292234811",
+      "type": "booking",
+      "text": "⚡ Tara J. just booked Cult Dance Fitness • 10:00 AM",
+      "timestamp": "2026-09-01T19:50:34.811Z"
+    },
+    {
+      "id": "evt-1788292219804",
+      "type": "completion",
+      "text": "🔥 Sneha P. smashed HRX Strength • 620 kcal burned!",
+      "timestamp": "2026-09-01T19:50:19.804Z"
+    },
+    {
+      "id": "evt-1788292204785",
+      "type": "announcement",
+      "text": "🏆 Community milestone: 52,000+ classes completed this month!",
+      "timestamp": "2026-09-01T19:50:04.785Z"
+    },
+    {
+      "id": "evt-1788292189784",
+      "type": "booking",
+      "text": "⚡ Vikram S. just booked Cult Dance Fitness • 10:00 AM",
+      "timestamp": "2026-09-01T19:49:49.784Z"
+    },
+    {
+      "id": "evt-1788292174773",
+      "type": "seat_alert",
+      "text": "⚡ Live alert: Only 2 spots left in Pro Boxing Fit tonight!",
+      "timestamp": "2026-09-01T19:49:34.773Z"
+    },
+    {
+      "id": "evt-1788292159755",
+      "type": "booking",
+      "text": "⚡ Pooja K. just booked Cult Dance Fitness • 10:00 AM",
+      "timestamp": "2026-09-01T19:49:19.755Z"
+    },
+    {
+      "id": "evt-1788292144751",
+      "type": "completion",
+      "text": "🔥 Tara J. smashed HRX Strength • 620 kcal burned!",
+      "timestamp": "2026-09-01T19:49:04.751Z"
+    }
+  ]
+}
